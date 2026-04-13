@@ -1,0 +1,67 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: supplykonnect_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    
+    - name: Build
+      working-directory: ./backend
+      run: cargo build --verbose
+    
+    - name: Run tests
+      working-directory: ./backend
+      env:
+        DATABASE_URL: postgres://postgres:password@localhost:5432/supplykonnect_test
+        REDIS_URL: redis://localhost:6379
+      run: cargo test --verbose
+    
+    - name: Run clippy
+      working-directory: ./backend
+      run: cargo clippy -- -D warnings
+    
+    - name: Check formatting
+      working-directory: ./backend
+      run: cargo fmt -- --check
