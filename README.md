@@ -481,7 +481,7 @@ We chose Stellar's Soroban platform because:
 * Grant funding from Stellar Foundation
 
 ## 🔗 Links & Resources
-* **GitHub**: [github.com/yourusername/Supply-Konnect](https://github.com/yourusername/Supply-Konnect)
+* **GitHub**: [github.com/Supply-Konnect/Supply-Konnect](https://github.com/Supply-Konnect/Supply-Konnect)
 * **Website**: Coming soon
 * **Demo**: Coming soon
 * **Docs**: See `/docs` directory
