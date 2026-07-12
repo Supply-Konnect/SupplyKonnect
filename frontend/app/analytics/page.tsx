@@ -5,12 +5,21 @@ import Link from 'next/link'
 import { useTheme } from '../../lib/theme'
 import { fetchAnalytics } from '../../lib/api'
 
+type EventByType = { type: string; count: number }
+type TopProduct = { id: string; name: string; event_count: number }
+type AnalyticsData = {
+  product_count: number
+  event_count: number
+  events_by_type: EventByType[]
+  top_products: TopProduct[]
+}
+
 export default function AnalyticsPage() {
   const { theme: S } = useTheme()
-  const [data, setData] = useState<Record<string, unknown> | null>(null)
+  const [data, setData] = useState<AnalyticsData | null>(null)
 
   useEffect(() => {
-    fetchAnalytics().then(setData).catch(() => {})
+    fetchAnalytics().then(d => setData(d as AnalyticsData)).catch(() => {})
   }, [])
 
   if (!data) return (
@@ -19,8 +28,7 @@ export default function AnalyticsPage() {
     </main>
   )
 
-  const eventsData = (data as { events_by_type?: {type: string; count: number}[]; top_products?: {id: string; name: string; event_count: number}[] })
-  const maxEvents = Math.max(...(eventsData.events_by_type?.map(e => e.count) ?? [1]))
+  const maxEvents = Math.max(...(data.events_by_type?.map(e => e.count) ?? [1]))
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
@@ -29,7 +37,6 @@ export default function AnalyticsPage() {
         <p className="mt-1 text-sm" style={{ color: S.muted }}>Platform-wide supply chain insights</p>
       </div>
 
-      {/* Top stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
           { label: 'Total Products', value: data.product_count, icon: '📦' },
@@ -47,14 +54,13 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Events by type bar chart */}
         <div className="rounded-xl p-6" style={{ backgroundColor: S.card, border: `1px solid ${S.border}` }}>
           <h2 className="font-semibold text-lg mb-5" style={{ color: S.heading }}>Events by Type</h2>
           {data.events_by_type?.length === 0 ? (
             <p className="text-sm" style={{ color: S.muted }}>No events yet.</p>
           ) : (
             <div className="space-y-3">
-              {data.events_by_type?.map((e: any) => (
+              {data.events_by_type?.map((e: EventByType) => (
                 <div key={e.type}>
                   <div className="flex justify-between text-sm mb-1">
                     <span style={{ color: S.body }}>{e.type.replace('_', ' ')}</span>
@@ -70,14 +76,13 @@ export default function AnalyticsPage() {
           )}
         </div>
 
-        {/* Top products */}
         <div className="rounded-xl p-6" style={{ backgroundColor: S.card, border: `1px solid ${S.border}` }}>
           <h2 className="font-semibold text-lg mb-5" style={{ color: S.heading }}>Most Active Products</h2>
           {data.top_products?.length === 0 ? (
             <p className="text-sm" style={{ color: S.muted }}>No data yet.</p>
           ) : (
             <div className="space-y-3">
-              {data.top_products?.map((p: any, i: number) => (
+              {data.top_products?.map((p: TopProduct, i: number) => (
                 <Link key={p.id} href={`/products/${p.id}`}
                   className="flex items-center justify-between p-3 rounded-lg transition-colors hover:opacity-80"
                   style={{ backgroundColor: S.bg, border: `1px solid ${S.border}` }}>

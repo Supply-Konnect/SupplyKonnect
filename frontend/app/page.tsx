@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTheme } from '../lib/theme'
 import { fetchProducts, fetchEvents } from '../lib/api'
-import { Product } from '../lib/stellar/types'
+import { Product, TrackingEvent } from '../lib/stellar/types'
 
 export default function Home() {
   const { theme } = useTheme()
@@ -16,7 +16,7 @@ export default function Home() {
     fetchProducts().then(async ps => {
       setProducts(ps)
       const all = await Promise.all(ps.map((p: Product) => fetchEvents(p.id).catch(() => [])))
-      setTotalEvents(all.reduce((s: number, e: any[]) => s + e.length, 0))
+      setTotalEvents(all.reduce((s: number, e: TrackingEvent[]) => s + e.length, 0))
       setCountries(new Set(ps.map((p: Product) => p.origin.split(',').pop()?.trim())).size)
     }).catch(() => {})
   }, [])

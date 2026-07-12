@@ -4,18 +4,19 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTheme } from '../../lib/theme'
 import { fetchProducts, fetchEvents } from '../../lib/api'
+import { Product, TrackingEvent } from '../../lib/stellar/types'
 
 export default function ProductsPage() {
   const { theme: S } = useTheme()
-  const [products, setProducts] = useState<any[]>([])
-  const [eventsMap, setEventsMap] = useState<Record<string, any[]>>({})
+  const [products, setProducts] = useState<Product[]>([])
+  const [eventsMap, setEventsMap] = useState<Record<string, TrackingEvent[]>>({})
   const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchProducts().then(async ps => {
       setProducts(ps)
-      const map: Record<string, any[]> = {}
-      await Promise.all(ps.map(async (p: any) => {
+      const map: Record<string, TrackingEvent[]> = {}
+      await Promise.all(ps.map(async (p: Product) => {
         map[p.id] = await fetchEvents(p.id).catch(() => [])
       }))
       setEventsMap(map)
@@ -42,7 +43,6 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      {/* Search */}
       <div className="mb-6 relative">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base" style={{ color: S.muted }}>🔍</span>
         <input
@@ -62,7 +62,7 @@ export default function ProductsPage() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-5">
-          {filtered.map((product: any) => {
+          {filtered.map((product: Product) => {
             const events = eventsMap[product.id] ?? []
             const latest = [...events].sort((a, b) => b.timestamp - a.timestamp)[0]
             return (

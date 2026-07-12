@@ -30,8 +30,8 @@ function fmt(ts: number) {
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const { theme: S } = useTheme()
-  const [product, setProduct] = useState<any>(null)
-  const [events, setEvents] = useState<any[]>([])
+  const [product, setProduct] = useState<Record<string, unknown> | null>(null)
+  const [events, setEvents] = useState<TrackingEvent[]>([])
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           <TransferOwner
             productId={product.id}
             currentOwner={product.owner}
-            onSuccess={(newOwner) => setProduct((p: any) => ({ ...p, owner: newOwner }))}
+            onSuccess={(newOwner) => setProduct((p) => ({ ...(p as Record<string, unknown>), owner: newOwner }))}
           />
         </div>
       </div>

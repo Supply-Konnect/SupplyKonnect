@@ -15,7 +15,7 @@ export default function ImportPage() {
   const { theme: S } = useTheme()
   const router = useRouter()
   const [csv, setCsv] = useState('')
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -37,10 +37,10 @@ export default function ImportPage() {
       if (!products.every(p => p.id && p.name && p.origin)) {
         throw new Error('Each row must have id, name, and origin columns')
       }
-      const res = await bulkImport(products as any)
+      const res = await bulkImport(products as { id: string; name: string; origin: string }[])
       setResult(res)
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Import failed')
     } finally {
       setLoading(false)
     }
