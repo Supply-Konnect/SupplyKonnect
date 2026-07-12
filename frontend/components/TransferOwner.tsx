@@ -25,8 +25,8 @@ export default function TransferOwner({ productId, currentOwner, onSuccess }: {
       setDone(true)
       onSuccess(newOwner.trim())
       setTimeout(() => { setDone(false); setShow(false); setNewOwner('') }, 2000)
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Transfer failed')
     } finally {
       setLoading(false)
     }

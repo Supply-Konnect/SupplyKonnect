@@ -8,7 +8,7 @@ async function req<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, { cache: 'no-store', ...opts })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error((err as any).error ?? `Request failed: ${res.status}`)
+    throw new Error((err as { error?: string }).error ?? `Request failed: ${res.status}`)
   }
   return res.json()
 }
@@ -51,7 +51,7 @@ export const fetchEvents = async (productId: string): Promise<TrackingEvent[]> =
   }
 }
 
-export const fetchAnalytics = async (): Promise<any> => {
+export const fetchAnalytics = async (): Promise<Record<string, unknown>> => {
   if (IS_DEMO) {
     const byType = ['HARVEST','PROCESSING','SHIPPING','QUALITY_CHECK','CUSTOMS','DELIVERY']
       .map(t => ({ type: t, count: Math.floor(Math.random() * 8) + 2 }))
@@ -72,7 +72,7 @@ export const createProduct = (payload: { id: string; name: string; origin: strin
     body: JSON.stringify(payload),
   })
 
-export const bulkImport = (products: { id: string; name: string; origin: string }[]): Promise<any> =>
+export const bulkImport = (products: { id: string; name: string; origin: string }[]): Promise<Record<string, unknown>> =>
   req('/api/products/bulk', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -86,7 +86,7 @@ export const createEvent = (productId: string, payload: { location: string; even
     body: JSON.stringify(payload),
   })
 
-export const transferOwner = (productId: string, newOwner: string): Promise<any> =>
+export const transferOwner = (productId: string, newOwner: string): Promise<Record<string, unknown>> =>
   req(`/api/products/${productId}/transfer`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },

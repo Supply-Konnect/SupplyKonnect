@@ -7,7 +7,7 @@ import { fetchAnalytics } from '../../lib/api'
 
 export default function AnalyticsPage() {
   const { theme: S } = useTheme()
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
     fetchAnalytics().then(setData).catch(() => {})
@@ -19,7 +19,8 @@ export default function AnalyticsPage() {
     </main>
   )
 
-  const maxEvents = Math.max(...(data.events_by_type?.map((e: any) => e.count) ?? [1]))
+  const eventsData = (data as { events_by_type?: {type: string; count: number}[]; top_products?: {id: string; name: string; event_count: number}[] })
+  const maxEvents = Math.max(...(eventsData.events_by_type?.map(e => e.count) ?? [1]))
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
