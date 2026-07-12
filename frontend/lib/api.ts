@@ -1,3 +1,4 @@
+// v2 - typed
 import { Product, TrackingEvent } from './stellar/types'
 import { demoProducts, getDemoEvents } from './demo-data'
 
