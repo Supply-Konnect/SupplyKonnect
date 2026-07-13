@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '../lib/theme'
-import Navbar from '../components/Navbar'
+import Sidebar from '../components/Sidebar'
+import MobileNav from '../components/MobileNav'
 
 export const metadata: Metadata = {
   title: 'Supply-Konnect - Decentralized Supply Chain Tracking',
@@ -20,8 +21,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen">
         <ThemeProvider>
-          <Navbar />
-          {children}
+          {/* Sidebar for desktop */}
+          <Sidebar />
+          {/* Mobile top nav */}
+          <MobileNav />
+          {/* Main content — offset by sidebar width on desktop */}
+          <div className="sm:pl-56 min-h-screen" style={{ backgroundColor: 'inherit' }}>
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>
